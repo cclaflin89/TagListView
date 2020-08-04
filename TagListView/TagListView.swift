@@ -275,11 +275,11 @@ open class TagListView: UIView {
             tagViewHeight = tagView.frame.height
             
             if currentRowTagCount == 0 || currentRowWidth + tagView.frame.width > frameWidth {
-                currentRow += 1
-                
-                if currentRow > maxRows, maxRows != 0 {
+                if currentRow >= maxRows, maxRows != 0 {
                     break
                 }
+                
+                currentRow += 1
                 
                 currentRowWidth = 0
                 currentRowTagCount = 0
