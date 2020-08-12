@@ -206,6 +206,7 @@ open class TagListView: UIView {
     }
     
     @IBOutlet open weak var delegate: TagListViewDelegate?
+    open var hasMoreRows = false
     
     open private(set) var tagViews: [TagView] = []
     private(set) var tagBackgroundViews: [UIView] = []
@@ -270,12 +271,15 @@ open class TagListView: UIView {
             ? CGAffineTransform(scaleX: -1.0, y: 1.0)
             : CGAffineTransform.identity
         
+        hasMoreRows = false
+        
         for (index, tagView) in tagViews.enumerated() {
             tagView.frame.size = tagView.intrinsicContentSize
             tagViewHeight = tagView.frame.height
             
             if currentRowTagCount == 0 || currentRowWidth + tagView.frame.width > frameWidth {
                 if currentRow >= maxRows, maxRows != 0 {
+                    hasMoreRows = true
                     break
                 }
                 
