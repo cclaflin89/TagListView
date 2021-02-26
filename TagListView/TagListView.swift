@@ -227,6 +227,8 @@ open class TagListView: UIView {
         }
     }
     
+    var moreButton: TagView?
+    
     // MARK: - Interface Builder
     
     open override func prepareForInterfaceBuilder() {
@@ -244,6 +246,9 @@ open class TagListView: UIView {
     
     private func rearrangeViews() {
         let views = tagViews as [UIView] + tagBackgroundViews + rowViews
+        
+        moreButton?.removeFromSuperview()
+        
         views.forEach {
             $0.removeFromSuperview()
         }
@@ -285,7 +290,8 @@ open class TagListView: UIView {
         let needToHideRows = !showAllHiddenTags && numberOfTagsToShowFirst > 0 && tagViews.count > numberOfTagsToShowFirst
         var tagViewsToShow = needToHideRows ? Array(tagViews.prefix(numberOfTagsToShowFirst)) : tagViews
         if needToHideRows {
-            tagViewsToShow.append(createMoreButton())
+            self.moreButton = createMoreButton()
+            tagViewsToShow.append(moreButton!)
         }
         
         print(tagViewsToShow.count)
