@@ -205,6 +205,15 @@ open class TagListView: UIView {
         }
     }
     
+    @IBInspectable open var numberOfTagsToShowFirst = 0 {
+        didSet {
+            showAllHiddenTags = false
+            rearrangeViews()
+        }
+    }
+    
+    private var showAllHiddenTags = false
+    
     @IBOutlet open weak var delegate: TagListViewDelegate?
     open var hasMoreRows = false
     
@@ -273,7 +282,16 @@ open class TagListView: UIView {
         
         hasMoreRows = false
         
-        for (index, tagView) in tagViews.enumerated() {
+        let needToHideRows = !showAllHiddenTags && numberOfTagsToShowFirst > 0 && tagViews.count > numberOfTagsToShowFirst
+        var tagViewsToShow = needToHideRows ? Array(tagViews.prefix(numberOfTagsToShowFirst)) : tagViews
+        if needToHideRows {
+            tagViewsToShow.append(createMoreButton())
+        }
+        
+        print(tagViewsToShow.count)
+        print(tagViewsToShow.compactMap({$0.title(for: .normal)}).joined(separator: ","))
+        
+        for (index, tagView) in tagViewsToShow.enumerated() {
             tagView.frame.size = tagView.intrinsicContentSize
             tagViewHeight = tagView.frame.height
             
@@ -374,6 +392,41 @@ open class TagListView: UIView {
         
         return tagView
     }
+    
+    let TAG_MORE_BUTTON = Int.max - 1
+    
+    private func createMoreButton() -> TagView {
+        let tagView = TagView(title: "")
+        
+        tagView.textColor = textColor
+        tagView.selectedTextColor = selectedTextColor
+        tagView.tagBackgroundColor = tagBackgroundColor
+        tagView.highlightedBackgroundColor = tagHighlightedBackgroundColor
+        tagView.selectedBackgroundColor = tagSelectedBackgroundColor
+        tagView.titleLineBreakMode = tagLineBreakMode
+        tagView.cornerRadius = cornerRadius
+        tagView.borderWidth = borderWidth
+        tagView.borderColor = borderColor
+        tagView.selectedBorderColor = selectedBorderColor
+        tagView.paddingX = paddingX + 8
+        tagView.paddingY = paddingY
+        tagView.textFont = textFont
+        tagView.enableRemoveButton = false
+        
+        tagView.tintColor = textColor
+        
+        tagView.setImage(UIImage(named: "more"), for: .normal)
+        
+        tagView.tag = TAG_MORE_BUTTON
+        tagView.addTarget(self, action: #selector(tagPressed(_:)), for: .touchUpInside)
+        
+        tagView.onTap = { [unowned self] view in
+            self.showAllHiddenTags = true
+            self.rearrangeViews()
+        }
+        
+        return tagView
+    }
 
     @discardableResult
     open func addTag(_ title: String) -> TagView {
@@ -456,7 +509,14 @@ open class TagListView: UIView {
     // MARK: - Events
     
     @objc func tagPressed(_ sender: TagView!) {
+        let tag = sender.tag
         sender.onTap?(sender)
+        
+        if tag == TAG_MORE_BUTTON {
+            // skip
+            return
+        }
+        
         delegate?.tagPressed?(sender.currentTitle ?? "", tagView: sender, sender: self)
     }
     
