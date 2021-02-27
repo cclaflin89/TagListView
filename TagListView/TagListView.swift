@@ -294,9 +294,6 @@ open class TagListView: UIView {
             tagViewsToShow.append(moreButton!)
         }
         
-        print(tagViewsToShow.count)
-        print(tagViewsToShow.compactMap({$0.title(for: .normal)}).joined(separator: ","))
-        
         for (index, tagView) in tagViewsToShow.enumerated() {
             tagView.frame.size = tagView.intrinsicContentSize
             tagViewHeight = tagView.frame.height
