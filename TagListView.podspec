@@ -13,5 +13,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/ElaWorkshop/TagListView.git", :tag => s.version }
   s.source_files = "TagListView/*.swift"
+  s.resources    = ['TagListView/*.xcassets']
   s.requires_arc = true
 end
